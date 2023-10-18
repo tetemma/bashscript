@@ -1,0 +1,57 @@
+sudo apt update
+sudo apt install mariadb-server mariadb-client -y
+
+--------------------------------------------------------------------------
+No script. 
+
+MariaDB [(none)]> create user 'MyProject'@'localhost' identified by 'M0LQ0LIsK+U7igeYXTMpPA==';
+Query OK, 0 rows affected (0,001 sec)
+
+MariaDB [(none)]> grant all privileges ON MyProject.* To 'MyProject'@'localhost';
+Query OK, 0 rows affected (0,002 sec)
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| MyProject          |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| tetemma            |
++--------------------+
+6 rows in set (0,000 sec)
+
+MariaDB [(none)]> exit
+Bye
+---------------------------------------------------------------------------
+Script.
+
+on créer le script + chmod 744
+
+---------------------------------------------------------------------------
+!/bin/bash
+
+# Vérifie si un nom de projet a été crée
+if [ "$#" -eq 1 ]; then
+  project_name="$1"
+else
+  read -p "Entrez le nom du projet : " project_name
+fi
+
+# Génère un mot de passe aléatoire pour l'utilisateur du projet
+password=$(openssl rand -base64 12)
+
+# Crée la base de données et l'utilisateur
+mysql -e "CREATE DATABASE $project_name;"
+mysql -e "CREATE USER '$project_name'@'localhost' IDENTIFIED BY '$password';"
+mysql -e "GRANT ALL PRIVILEGES ON $project_name.* TO '$project_name'@'localhost';"
+mysql -e "FLUSH PRIVILEGES;"
+
+echo "Base de données $project_name créée avec succès."
+echo "Nom d'utilisateur : $project_name"
+echo "Mot de passe de l'utilisateur : $password"
+exit 0
+
+exit 0
